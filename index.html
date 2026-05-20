@@ -1,0 +1,859 @@
+<!DOCTYPE HTML>
+<html lang="pt-BR">
+<head>
+	<title>GitHub - Guia Completo para Desenvolvedores</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="description" content="Guia completo para desenvolvedores sobre GitHub, Git, branches, commits, PRs e sincronização." />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<style>
+		body {
+			position: relative;
+			isolation: isolate;
+			background: #06152c;
+		}
+
+		body::before {
+			content: '';
+			position: fixed;
+			inset: 0;
+			z-index: -1;
+			pointer-events: none;
+			background:
+				radial-gradient(circle at 18% 0%, rgba(57, 184, 255, 0.14), transparent 30%),
+				radial-gradient(circle at 82% 12%, rgba(96, 231, 255, 0.07), transparent 24%),
+				radial-gradient(circle at 50% 100%, rgba(7, 63, 129, 0.18), transparent 34%),
+				linear-gradient(180deg, #051226 0%, #07172f 30%, #08213b 64%, #06152c 100%);
+			background-attachment: fixed;
+		}
+
+		body, input, select, textarea {
+			color: rgba(255, 255, 255, 0.88);
+		}
+
+		a {
+			color: #8adfff;
+		}
+
+		a:hover {
+			color: #ffffff;
+		}
+
+		#header {
+			background: transparent;
+			color: rgba(255, 255, 255, 0.95);
+			position: relative;
+			padding-top: 5em;
+			padding-bottom: 5em;
+		}
+
+		#header::after {
+			content: '';
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: -1px;
+			height: 90px;
+			pointer-events: none;
+			background: linear-gradient(180deg, rgba(7, 25, 56, 0.35) 0%, rgba(4, 18, 42, 0.92) 100%);
+		}
+
+		#header h1,
+		#header p {
+			color: rgba(255, 255, 255, 0.95);
+		}
+
+		#header p a {
+			color: #9feaff;
+			border-bottom-color: rgba(159, 234, 255, 0.35);
+		}
+
+		#header p a:hover {
+			border-bottom-color: transparent;
+		}
+
+		#footer {
+			background: linear-gradient(180deg, rgba(7, 25, 56, 0.35) 0%, rgba(4, 18, 42, 0.92) 100%);
+			color: rgba(255, 255, 255, 0.8);
+		}
+
+		#footer a {
+			color: #9feaff;
+		}
+
+		#main .major.container {
+			background: rgba(255, 255, 255, 0.03);
+			border: 1px solid rgba(143, 220, 255, 0.1);
+			box-shadow: 0 14px 28px rgba(0, 6, 20, 0.12);
+			backdrop-filter: blur(8px);
+		}
+
+		#main .major.container h2,
+		#main .major.container p {
+			color: rgba(255, 255, 255, 0.95);
+		}
+
+		#main .major.container p {
+			border-top-color: rgba(143, 220, 255, 0.12);
+		}
+
+		#main .box.container {
+			text-align: left;
+			padding: 3em 3.25em;
+			margin-bottom: 3em;
+			background: rgba(245, 249, 255, 0.88);
+			border: 1px solid rgba(143, 220, 255, 0.08);
+			box-shadow: 0 12px 28px rgba(0, 8, 28, 0.1);
+			backdrop-filter: blur(6px);
+		}
+
+		#main .box.container > section > header,
+		#main .box.container > section > h2,
+		#main .box.container > section > h3 {
+			text-align: center;
+			color: #071b3a;
+		}
+
+		#main .box.container > section > p,
+		#main .box.container > section > ol,
+		#main .box.container > section > ul,
+		#main .box.container > section > .table-wrapper,
+		#main .box.container > section > pre,
+		#main .box.container > section > blockquote {
+			margin-bottom: 1.25em;
+		}
+
+		#main .box.container p {
+			line-height: 1.8;
+			color: #354a69;
+		}
+
+		#main .box.container section,
+		#main .box.container section p,
+		#main .box.container section li,
+		#main .box.container section td,
+		#main .box.container section th,
+		#main .box.container section .small-note {
+			color: #354a69;
+		}
+
+		#main .box.container section strong {
+			color: #0a244a;
+		}
+
+		#main .box.container section a {
+			color: #0f6fb8;
+		}
+
+		#main .box.container section a:hover {
+			color: #094d84;
+		}
+
+		#main .box.container ul,
+		#main .box.container ol {
+			padding-left: 1.25em;
+		}
+
+		#main .box.container li {
+			margin-bottom: 0.45em;
+		}
+
+		#main .box.container h2 {
+			margin-bottom: 0.65em;
+			color: #071b3a;
+		}
+
+		#main .box.container h3 {
+			margin-top: 1.5em;
+			margin-bottom: 0.75em;
+			color: #12356f;
+		}
+
+		#main .box.container + .box.container {
+			margin-top: -1.25em;
+		}
+
+		.hero-icons {
+			display: flex;
+			justify-content: center;
+			gap: 1.2rem;
+			margin-bottom: 0.8rem;
+		}
+
+		#header .hero-icons .logo {
+			width: auto !important;
+			height: auto !important;
+			line-height: 1 !important;
+			border-radius: 0 !important;
+			background: transparent !important;
+			border: 0 !important;
+			box-shadow: none !important;
+			font-size: 3.4rem !important;
+			padding: 0 !important;
+		}
+
+		#header .hero-icons .icon.brands {
+			color: #6fa7d6;
+		}
+
+		#header .hero-icons .icon.fa-git-alt {
+			color: #27b7ff;
+		}
+
+		#header .hero-icons .icon.fa-github {
+			color: #6fa7d6;
+		}
+
+		.tutorial-section + .tutorial-section {
+			border-top: 1px solid rgba(224, 224, 224, 0.8);
+			padding-top: 1.75em;
+			margin-top: 2em;
+		}
+
+		.code-block {
+			background: #0a2347;
+			color: #eaf4ff;
+			border: 1px solid rgba(143, 220, 255, 0.16);
+			border-radius: 6px;
+			padding: 1.1em 1.25em;
+			overflow-x: auto;
+			white-space: pre;
+			line-height: 1.65;
+			font-size: 0.95em;
+			box-shadow: 0 12px 24px rgba(0, 10, 28, 0.16);
+		}
+
+		.code-block code {
+			background: transparent;
+			padding: 0;
+			white-space: pre;
+			color: inherit;
+		}
+
+		.table-wrapper {
+			margin: 0 0 1.25em 0;
+			overflow-x: auto;
+		}
+
+		table.default td,
+		table.default th {
+			padding: 0.75em 1em;
+			vertical-align: top;
+			border-color: rgba(7, 27, 58, 0.08);
+		}
+
+		table.default td {
+			color: #243a5b;
+			background: rgba(255, 255, 255, 0.68);
+		}
+
+		table.default th {
+			font-size: 0.8em;
+			letter-spacing: 0.1em;
+			background: linear-gradient(90deg, #081b39 0%, #123c7a 100%);
+			color: #ffffff;
+		}
+
+		#main .box.container table.default thead th {
+			background: linear-gradient(90deg, #06122a 0%, #11407f 100%);
+			color: #ffffff !important;
+			font-weight: 700;
+			text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+		}
+
+		#main .box.container table.default thead th,
+		#main .box.container table.default tbody td {
+			border-color: rgba(143, 220, 255, 0.16);
+		}
+
+		table.default thead th {
+			border-bottom: 1px solid rgba(143, 220, 255, 0.18);
+		}
+
+		table.default tbody tr:nth-child(2n) td {
+			background: rgba(16, 109, 255, 0.04);
+		}
+
+		table.default tbody tr:hover td {
+			background: rgba(86, 207, 255, 0.08);
+		}
+
+		.small-note {
+			font-size: 0.92em;
+			color: #888888;
+		}
+
+		.toc {
+			text-align: center;
+			margin-top: 1.25em;
+		}
+
+		.toc a {
+			display: inline-block;
+			margin: 0.3em 0.45em;
+			padding: 0.55em 0.9em;
+			border-radius: 999px;
+			border: 1px solid rgba(143, 220, 255, 0.3);
+			text-decoration: none;
+			font-size: 0.9em;
+			background: rgba(255, 255, 255, 0.92);
+			color: #0a1c3d;
+			box-shadow: 0 6px 14px rgba(0, 10, 28, 0.06);
+		}
+
+		@media screen and (max-width: 736px) {
+			#main .box.container {
+				padding: 2em 1.25em;
+			}
+
+			.hero-icons .logo {
+				width: 3.6rem;
+				height: 3.6rem;
+				line-height: 3.6rem;
+				font-size: 1.2rem;
+			}
+
+			.code-block {
+				white-space: pre-wrap;
+			}
+		}
+	</style>
+</head>
+<body class="is-preload">
+
+	<div id="header">
+		<div class="hero-icons">
+			<span class="logo icon brands fa-git-alt" aria-hidden="true"></span>
+			<span class="logo icon brands fa-github" aria-hidden="true"></span>
+		</div>
+		<h1>GitHub</h1>
+		<p>Guia Completo para Desenvolvedores<br />
+			um tutorial para Git e GitHub baseado no material do PDF.</p>
+	</div>
+
+	<div id="main">
+
+		<header class="major container medium">
+			<h2>Git, GitHub, branches, commits, PRs e forks
+			<br />
+			para publicação estática no GitHub Pages</h2>
+			<p>Conteúdo mantido integralmente a partir do tutorial fornecido, reorganizado no estilo clássico do template HTML5 UP.</p>
+			<div class="toc">
+				<a href="#o-que-e-o-github">1</a>
+				<a href="#configuracao-da-maquina-local">2</a>
+				<a href="#criando-um-repositorio-no-github">3</a>
+				<a href="#trabalhando-com-branches">4</a>
+				<a href="#realizando-commits">5</a>
+				<a href="#sincronizando-com-o-github">6</a>
+				<a href="#pull-request">7</a>
+				<a href="#fork-contribuicao">8</a>
+				<a href="#referencia-rapida">9</a>
+			</div>
+		</header>
+
+		<div class="box container">
+			<section id="o-que-e-o-github" class="tutorial-section">
+				<header>
+					<h2>1. O que é o GitHub?</h2>
+				</header>
+				<p>O GitHub é a maior plataforma de hospedagem de código-fonte do mundo, baseada no sistema de controle de versões Git. Ele permite que desenvolvedores armazenem, versionem, colaborem e revisem código de forma organizada e eficiente, sendo usado tanto por projetos pessoais quanto por grandes empresas. O Git foi criado em 2005 por Linus Torvalds para solucionar o problema de versionamento e correção de códigos.</p>
+				<p>Além de hospedar repositórios, o GitHub oferece ferramentas integradas como Issues (gestão de tarefas), Pull Requests (revisão de código), GitHub Actions (CI/CD automatizado), GitHub Pages (hospedagem de sites estáticos) e GitHub Copilot (assistente de IA para código).</p>
+
+				<h3>1.1 Git vs GitHub</h3>
+				<div class="table-wrapper">
+					<table class="default">
+						<thead>
+							<tr>
+								<th>Git</th>
+								<th>GitHub</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><strong>O que é?</strong> Ferramenta de versionamento local</td>
+								<td><strong>O que é?</strong> Plataforma online para hospedar repositórios Git</td>
+							</tr>
+							<tr>
+								<td><strong>Onde roda?</strong> Na sua máquina</td>
+								<td><strong>Onde roda?</strong> Na nuvem (github.com)</td>
+							</tr>
+							<tr>
+								<td><strong>Precisa de internet?</strong> Não (operações locais)</td>
+								<td><strong>Precisa de internet?</strong> Sim</td>
+							</tr>
+							<tr>
+								<td><strong>Criado por?</strong> Linus Torvalds (2005)</td>
+								<td><strong>Criado por?</strong> Tom Preston-Werner (2008), hoje Microsoft</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+		</div>
+
+		<div class="box container">
+			<section id="configuracao-da-maquina-local" class="tutorial-section">
+				<header>
+					<h2>2. Configuração da Máquina Local</h2>
+				</header>
+
+				<h3>2.1 Instalando o Git</h3>
+				<p><strong>Windows</strong></p>
+				<pre class="code-block"><code># Baixe o instalador em: https://git-scm.com/download/win
+# Execute e mantenha as opções padrão</code></pre>
+				<p><strong>macOS</strong></p>
+				<pre class="code-block"><code>brew install git</code></pre>
+				<p><strong>Linux (Ubuntu/Debian)</strong></p>
+				<pre class="code-block"><code>sudo apt update &amp;&amp; sudo apt install git -y</code></pre>
+
+				<h3>2.2 Configurando sua Identidade</h3>
+				<p>Essas informações aparecem em todos os seus commits e são obrigatórias:</p>
+				<pre class="code-block"><code>git config --global user.name "Seu Nome Completo"
+git config --global user.email "seu@email.com"</code></pre>
+				<p>Para conferir as configurações salvas:</p>
+				<pre class="code-block"><code>git config --list</code></pre>
+
+				<h3>2.3 Configurando Chave SSH</h3>
+				<p>A chave SSH permite autenticação segura sem precisar digitar usuário e senha a cada operação. É a forma recomendada de trabalhar com o GitHub.</p>
+				<p><strong>Passo 1 -- Verificar se já existe uma chave</strong></p>
+				<pre class="code-block"><code>ls ~/.ssh
+# Se aparecer id_ed25519 e id_ed25519.pub, você já tem uma chave -- pule para o Passo 3</code></pre>
+				<p><strong>Passo 2 -- Gerar a chave</strong></p>
+				<pre class="code-block"><code>ssh-keygen -t ed25519 -C "seu@email.com"
+# Pressione Enter para aceitar o caminho padrão
+# Defina uma senha ou deixe vazio (só pressione Enter)</code></pre>
+				<p><strong>Passo 3 -- Iniciar o agente e adicionar a chave</strong></p>
+				<pre class="code-block"><code>eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519</code></pre>
+				<p><strong>Passo 4 -- Copiar a chave pública</strong></p>
+				<pre class="code-block"><code># Linux / macOS
+cat ~/.ssh/id_ed25519.pub
+
+# Windows (PowerShell)
+Get-Content ~/.ssh/id_ed25519.pub
+
+# Selecione e copie tudo -- começa com: ssh-ed25519 AAAA...</code></pre>
+				<p><strong>Passo 5 -- Adicionar ao GitHub</strong></p>
+				<ul>
+					<li>Acesse github.com e faça login.</li>
+					<li>Clique no avatar (canto superior direito) &gt; Settings.</li>
+					<li>Menu lateral: SSH and GPG keys &gt; New SSH key.</li>
+					<li>Cole a chave no campo Key, defina um título e clique em Add SSH key.</li>
+				</ul>
+				<p><strong>Passo 6 -- Testar a conexão</strong></p>
+				<pre class="code-block"><code>ssh -T git@github.com
+# Resposta esperada: Hi seu_usuario! You've successfully authenticated...
+# Dica: Se aparecer uma pergunta sobre fingerprint, digite yes e pressione Enter.</code></pre>
+
+				<h3>2.4 Configurações Adicionais Recomendadas</h3>
+				<pre class="code-block"><code># Editor padrão (VS Code)
+git config --global core.editor "code --wait"
+# Branch padrão chamada 'main'
+git config --global init.defaultBranch main
+# Rebase ao invés de merge no git pull
+git config --global pull.rebase true
+# Cores no terminal
+git config --global color.ui auto</code></pre>
+			</section>
+		</div>
+
+		<div class="box container">
+			<section id="criando-um-repositorio-no-github" class="tutorial-section">
+				<header>
+					<h2>3. Criando um Repositório no GitHub</h2>
+				</header>
+
+				<h3>3.1 Criando via Interface Web</h3>
+				<p>Siga os passos abaixo para criar um novo repositório:</p>
+				<ol>
+					<li>Acesse github.com e clique no botão + &gt; New repository (ou botão verde New).</li>
+					<li>Preencha o Repository name com um nome claro e descritivo.</li>
+					<li>Adicione uma Description explicando o propósito do projeto.</li>
+					<li>Escolha a visibilidade: Pública (qualquer pessoa vê) ou Privado (só você e convidados).</li>
+					<li>Marque Add a README file para inicializar o repositório.</li>
+					<li>Opcionalmente selecione um .gitignore para sua linguagem e uma licença.</li>
+					<li>Clique em Create repository.</li>
+				</ol>
+
+				<h3>3.2 Tipos de Visibilidade</h3>
+				<div class="table-wrapper">
+					<table class="default">
+						<thead>
+							<tr>
+								<th>Visibilidade</th>
+								<th>Descrição</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Public</td>
+								<td>Qualquer pessoa pode ver e clonar. Ideal para projetos open source.</td>
+							</tr>
+							<tr>
+								<td>Private</td>
+								<td>Apenas você e colaboradores adicionados podem acessar.</td>
+							</tr>
+							<tr>
+								<td>Internal</td>
+								<td>Visível para todos os membros da organização (apenas planos Enterprise).</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h3>3.3 Conectando um Projeto Local Existente ao GitHub</h3>
+				<p>Se você já tem um projeto na sua máquina e quer subi-lo para o GitHub:</p>
+				<pre class="code-block"><code># 1. Entre na pasta do projeto
+cd meu-projeto
+# 2. Inicialize o repositório local
+git init
+# 3. Adicione todos os arquivos
+git add .
+# 4. Faça o primeiro commit
+git commit -m "feat: commit inicial"
+# 5. Renomeie a branch para 'main'
+git branch -M main
+# 6. Conecte ao repositório remoto
+git remote add origin git@github.com:seu_usuario/nome-do-repo.git
+# 7. Envie para o GitHub
+git push -u origin main</code></pre>
+
+				<h3>3.4 Clonando um Repositório Existente</h3>
+				<pre class="code-block"><code># Via SSH (recomendado -- requer chave SSH configurada)
+git clone git@github.com:usuario/nome-do-repo.git
+# Via HTTPS
+git clone https://github.com/usuario/nome-do-repo.git
+# Entrar na pasta
+cd nome-do-repo</code></pre>
+			</section>
+		</div>
+
+		<div class="box container">
+			<section id="trabalhando-com-branches" class="tutorial-section">
+				<header>
+					<h2>4. Trabalhando com Branches</h2>
+				</header>
+				<p>Branches (ramificações) permitem desenvolver funcionalidades ou corrigir bugs de forma isolada, sem interferir no código principal. No GitHub, a branch principal normalmente se chama main.</p>
+
+				<h3>4.1 Comandos Essenciais de Branch</h3>
+				<pre class="code-block"><code># Ver todas as branches (local e remota)
+git branch -a
+# Criar uma nova branch
+git branch feature/minha-funcionalidade
+# Criar e já trocar para a nova branch
+git checkout -b feature/minha-funcionalidade
+# Forma moderna (Git 2.23+)
+git switch -c feature/minha-funcionalidade
+# Trocar de branch
+git checkout main
+# Enviar branch para o GitHub
+git push --set-upstream origin feature/minha-funcionalidade
+# Deletar branch local
+git branch -d feature/minha-funcionalidade
+# Deletar branch remota
+git push origin --delete feature/minha-funcionalidade</code></pre>
+
+				<h3>4.2 Convenção de Nomes para Branches</h3>
+				<div class="table-wrapper">
+					<table class="default">
+						<thead>
+							<tr>
+								<th>Prefixo</th>
+								<th>Uso</th>
+								<th>Exemplo</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>feature/</td>
+								<td>Nova funcionalidade</td>
+								<td>feature/autenticacao-google</td>
+							</tr>
+							<tr>
+								<td>fix/</td>
+								<td>Correção de bug</td>
+								<td>fix/erro-no-cadastro</td>
+							</tr>
+							<tr>
+								<td>hotfix/</td>
+								<td>Correção urgente em produção</td>
+								<td>hotfix/falha-critica-pagamento</td>
+							</tr>
+							<tr>
+								<td>release/</td>
+								<td>Preparação de nova versão</td>
+								<td>release/v2.0.0</td>
+							</tr>
+							<tr>
+								<td>docs/</td>
+								<td>Documentação</td>
+								<td>docs/atualizar-readme</td>
+							</tr>
+							<tr>
+								<td>chore/</td>
+								<td>Manutenção e infra</td>
+								<td>chore/atualizar-dependencias</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+		</div>
+
+		<div class="box container">
+			<section id="realizando-commits" class="tutorial-section">
+				<header>
+					<h2>5. Realizando Commits</h2>
+				</header>
+				<p>Um commit é um registro permanente das mudanças feitas no código. Bons commits são atômicos (fazem uma coisa só) e possuem mensagens claras que explicam o que e por que foi feito.</p>
+
+				<h3>5.1 O Ciclo Completo de um Commit</h3>
+				<pre class="code-block"><code># 1. Ver o que foi modificado
+git status
+# 2. Ver as diferenças detalhadas
+git diff
+# 3. Adicionar arquivos ao staging
+git add nome-do-arquivo.js
+# arquivo específico
+git add src/
+# pasta inteira
+git add .
+# 4. Revisar o que será commitado
+git diff --staged
+# 5. Criar o commit
+git commit -m "feat: adiciona validação de CPF no cadastro"
+# 6. Enviar para o GitHub
+git push origin feature/minha-branch</code></pre>
+
+				<h3>5.2 Padrão Conventional Commits</h3>
+				<p>Um padrão amplamente adotado para mensagens semânticas e legíveis:</p>
+				<div class="table-wrapper">
+					<table class="default">
+						<thead>
+							<tr>
+								<th>Tipo</th>
+								<th>Quando usar</th>
+								<th>Exemplo</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr><td>feat:</td><td>Nova funcionalidade</td><td>feat: adiciona login com Google</td></tr>
+							<tr><td>fix:</td><td>Correção de bug</td><td>fix: corrige erro 500 no endpoint de usuários</td></tr>
+							<tr><td>docs:</td><td>Documentação</td><td>docs: atualiza README com instruções de deploy</td></tr>
+							<tr><td>style:</td><td>Formatação sem mudança de lógica</td><td>style: aplica prettier no projeto</td></tr>
+							<tr><td>refactor:</td><td>Refatoração</td><td>refactor: extrai lógica de autenticação para serviço</td></tr>
+							<tr><td>test:</td><td>Testes</td><td>test: adiciona testes para o serviço de email</td></tr>
+							<tr><td>chore:</td><td>Manutenção</td><td>chore: atualiza dependências do projeto</td></tr>
+							<tr><td>perf:</td><td>Performance</td><td>perf: otimiza consulta SQL do relatório</td></tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h3>5.3 Comandos Úteis</h3>
+				<pre class="code-block"><code># Alterar a mensagem do último commit (antes do push)
+git commit --amend -m "nova mensagem corrigida"
+# Histórico compacto e visual
+git log --oneline --graph
+# Desfaz o último commit mantendo as alterações
+git reset --soft HEAD~1
+# Reverte um commit de forma segura (cria novo commit)
+git revert &lt;hash-do-commit&gt;
+Atenção: Nunca use git reset --hard em branches compartilhadas com o time -- isso reescreve o histórico e causa conflitos.</code></pre>
+			</section>
+		</div>
+
+		<div class="box container">
+			<section id="sincronizando-com-o-github" class="tutorial-section">
+				<header>
+					<h2>6. Sincronizando com o GitHub</h2>
+				</header>
+				<p>Manter o repositório local atualizado com o remoto é essencial para evitar conflitos ao trabalhar em equipe.</p>
+
+				<h3>6.1 Comandos de Sincronização</h3>
+				<pre class="code-block"><code># Baixar as mudanças sem aplicar (seguro para inspecionar antes)
+git fetch origin
+# Baixar e aplicar as mudanças na branch atual
+git pull origin main
+# Enviar seus commits para o GitHub
+git push origin feature/minha-branch
+# Ver os repositórios remotos configurados
+git remote -v
+# Alterar a URL do repositório remoto
+git remote set-url origin git@github.com:usuario/novo-repo.git
+Dica: Sempre faça git pull antes de começar a trabalhar para garantir que você está na versão mais recente.</code></pre>
+
+				<h3>6.2 Tabela de Comandos de Sincronização</h3>
+				<div class="table-wrapper">
+					<table class="default">
+						<thead>
+							<tr>
+								<th>Comando</th>
+								<th>O que faz</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr><td>git fetch origin</td><td>Baixar mudanças do remoto sem aplicar localmente</td></tr>
+							<tr><td>git pull origin main</td><td>Baixa e aplica as mudanças na branch atual</td></tr>
+							<tr><td>git push origin &lt;branch&gt;</td><td>Envia seus commits locais para o GitHub</td></tr>
+							<tr><td>git push -u origin main</td><td>Enviar e vincula a branch local com a remota</td></tr>
+							<tr><td>git remote -v</td><td>Lista os repositórios remotos configurados</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+		</div>
+
+		<div class="box container">
+			<section id="pull-request" class="tutorial-section">
+				<header>
+					<h2>7. Realizando um Pull Request (PR)</h2>
+				</header>
+				<p>O Pull Request é o processo formal de propor que suas alterações sejam revisadas e incorporadas a outra branch. É o coração da colaboração no GitHub.</p>
+
+				<h3>7.1 Criando um Pull Request</h3>
+				<ol>
+					<li>Faça push da sua branch: <span class="small-note">git push origin feature/minha-branch</span></li>
+					<li>Acesse o repositório no GitHub.</li>
+					<li>Uma faixa amarela aparecerá sugerindo criar um PR - clique em Compare &amp; pull request.</li>
+					<li>Ou vá em Pull requests &gt; New pull request e selecione as branches.</li>
+					<li>Defina: base (destino, geralmente main) e compare (sua branch com as alterações).</li>
+					<li>Preencha o título e a descrição detalhada.</li>
+					<li>Adicione Reviewers (revisores), Labels e Milestone se necessário.</li>
+					<li>Clique em Create pull request.</li>
+				</ol>
+
+				<h3>7.2 Boas Práticas para Descrição de PR</h3>
+				<pre class="code-block"><code>## O que foi feito: descreva claramente a mudança realizada.
+## Por que: explique por que essa mudança é necessária.</code></pre>
+
+				<h3>7.3 Revisando um Pull Request</h3>
+				<ul>
+					<li>Acesse a aba Files changed para ver todas as diferenças linha a linha.</li>
+					<li>Clique em uma linha específica para adicionar comentário.</li>
+					<li>Use o botão Review changes para submeter sua revisão.</li>
+					<li>Approve - aprovar as mudanças para merge.</li>
+					<li>Comment - deixar comentários gerais sem aprovar ou rejeitar.</li>
+					<li>Request changes - solicita alterações antes do merge.</li>
+				</ul>
+
+				<h3>7.4 Opções de Merge</h3>
+				<div class="table-wrapper">
+					<table class="default">
+						<thead>
+							<tr>
+								<th>Opção de Merge</th>
+								<th>O que faz</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr><td>Create a merge commit</td><td>Cria um commit de merge. Preserva todo o histórico da branch. Ideal para features.</td></tr>
+							<tr><td>Squash and merge</td><td>Une todos os commits em um único antes de mesclar. Histórico mais limpo.</td></tr>
+							<tr><td>Rebase and merge</td><td>Reaplica os commits sobre a base de forma linear. Sem commit de merge.</td></tr>
+					</tbody>
+					</table>
+				</div>
+
+				<p class="small-note">Dica: marque sempre 'Delete branch' após o merge para manter o repositório organizado.</p>
+			</section>
+		</div>
+
+		<div class="box container">
+			<section id="fork-contribuicao" class="tutorial-section">
+				<header>
+					<h2>8. Fork e Contribuindo com Projetos de Terceiros</h2>
+				</header>
+				<p>Para contribuir com um repositório que não é seu, o fluxo utiliza Fork - uma cópia do repositório original na sua conta do GitHub - pois você não tem permissão de escrita no repositório original.</p>
+
+				<h3>8.1 Fluxo Completo de Contribuição</h3>
+				<ol>
+					<li>Acesse o repositório original e clique em Fork (canto superior direito).</li>
+					<li>Clone o SEU fork (não o original).</li>
+				</ol>
+				<pre class="code-block"><code>git clone git@github.com:SEU_USUARIO/nome-do-repo.git
+cd nome-do-repo</code></pre>
+				<ol start="3">
+					<li>Adicione o repositório original como upstream.</li>
+				</ol>
+				<pre class="code-block"><code>git remote add upstream git@github.com:DONO_ORIGINAL/nome-do-repo.git
+git remote -v
+# origin = seu fork | upstream = original</code></pre>
+				<ol start="4">
+					<li>Crie uma branch para suas alterações.</li>
+				</ol>
+				<pre class="code-block"><code>git checkout -b fix/corrige-bug-no-formulario</code></pre>
+				<ol start="5">
+					<li>Faça as alterações, commit e push para o seu fork.</li>
+				</ol>
+				<pre class="code-block"><code>git add .
+git commit -m "fix: corrige validação no formulário de contato"
+git push origin fix/corrige-bug-no-formulario</code></pre>
+				<ol start="6">
+					<li>No GitHub, abra um Pull Request do seu fork para o repositório original.</li>
+				</ol>
+
+				<h3>8.2 Mantendo o Fork Atualizado</h3>
+				<p>Quando o projeto original receber novas atualizações, sincronize seu fork:</p>
+				<pre class="code-block"><code>git fetch upstream
+git checkout main
+git merge upstream/main
+git push origin main</code></pre>
+			</section>
+		</div>
+
+		<div class="box container">
+			<section id="referencia-rapida" class="tutorial-section">
+				<header>
+					<h2>9. Referência Rápida de Comandos</h2>
+				</header>
+				<div class="table-wrapper">
+					<table class="default">
+						<thead>
+							<tr>
+								<th>Comando</th>
+								<th>Descrição</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr><td class="small-note">git init</td><td>Inicializar um repositório local</td></tr>
+							<tr><td class="small-note">git clone &lt;url&gt;</td><td>Clonar um repositório remoto</td></tr>
+							<tr><td class="small-note">git status</td><td>Mostra status dos arquivos</td></tr>
+							<tr><td class="small-note">git add &lt;arquivo&gt;</td><td>Adicionar arquivo ao staging</td></tr>
+							<tr><td class="small-note">git add .</td><td>Adiciona todos os arquivos ao staging</td></tr>
+							<tr><td class="small-note">git commit -m "msg"</td><td>Cria um commit com mensagem</td></tr>
+							<tr><td class="small-note">git log --oneline</td><td>Histórico resumido de commits</td></tr>
+							<tr><td class="small-note">git branch</td><td>Lista todas as branches</td></tr>
+							<tr><td class="small-note">git checkout -b &lt;branch&gt;</td><td>Cria e troca para nova branch</td></tr>
+							<tr><td class="small-note">git merge &lt;branch&gt;</td><td>Mescla uma branch na atual</td></tr>
+							<tr><td class="small-note">git pull origin main</td><td>Baixa e aplica mudanças do remoto</td></tr>
+							<tr><td class="small-note">git push origin &lt;branch&gt;</td><td>Envia commits para o GitHub</td></tr>
+							<tr><td class="small-note">git push -u origin main</td><td>Enviar e vincula a branch local com a remota</td></tr>
+							<tr><td class="small-note">git remote set-url origin &lt;url&gt;</td><td>Troca a URL do repositório remoto</td></tr>
+							<tr><td class="small-note">git stash</td><td>Salva mudanças temporariamente</td></tr>
+							<tr><td class="small-note">git stash pop</td><td>Restaura mudanças salvas no stash</td></tr>
+							<tr><td class="small-note">git diff</td><td>Mostra diferenças não comitadas</td></tr>
+							<tr><td class="small-note">git revert &lt;hash&gt;</td><td>Reverte um commit de forma segura</td></tr>
+							<tr><td class="small-note">git cherry-pick &lt;hash&gt;</td><td>Aplica um commit específico na branch atual</td></tr>
+							<tr><td class="small-note">git tag v1.0.0</td><td>Cria uma tag de versão</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+		</div>
+
+	</div>
+
+	<div id="footer">
+		<div class="container medium">
+			<ul class="copyright">
+				<li>&copy; Tutorial GitHub Pages.</li><li>Design base: <a href="http://html5up.net">HTML5 UP</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+</body>
+</html>
